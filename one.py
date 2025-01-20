@@ -22,7 +22,10 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
-
+cursor_image = load_image('курсор.jpg')
+cursor_size = cursor_image.get_size()
+cursor = pygame.cursors.Cursor((0, 0), cursor_image)
+pygame.mouse.set_cursor(cursor)
 characters = [
     load_image('ch1.jpg'),
     load_image('l1.jpg'),
