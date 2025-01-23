@@ -22,7 +22,8 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
-cursor_image = load_image('курсор.jpg')
+cursor_image = load_image('нож.png')
+cursor_image = pygame.transform.scale(cursor_image, (300, 300))
 cursor_size = cursor_image.get_size()
 cursor = pygame.cursors.Cursor((0, 0), cursor_image)
 pygame.mouse.set_cursor(cursor)
@@ -85,7 +86,7 @@ def draw_characters(window):
                  current_frame % len(animation_frames[right_index])].get_height() * scale_factor)))
 
     left_pos = (WIDTH // 3 - 150 - left_image.get_width() // 2, HEIGHT // 2 - 100)
-    center_pos = (WIDTH // 2 + 50- center_image.get_width() // 2, HEIGHT // 2 - 250)
+    center_pos = (WIDTH // 2 + 40- center_image.get_width() // 2, HEIGHT // 2 - 250)
     right_pos = (2 * WIDTH // 3 + 200 - right_image.get_width() // 2, HEIGHT // 2 - 100)
 
     window.blit(left_image, left_pos)
