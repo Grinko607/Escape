@@ -1,0 +1,244 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "Все файлы (*)",
+    "fileStates": {
+        "1 уровень.tmx": {
+            "scale": 2,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 594.5,
+                "y": 557.25
+            }
+        },
+        "1685087245_idei-club-p-meiker-komnati-vkontakte-33.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "5805d2f4558ba29113d7f7e9f454546e.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Downloads/Telegram Desktop/1 уровень.tmx": {
+            "scale": 0.4888541666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 553.3347538887706,
+                "y": 20.45599829533353
+            }
+        },
+        "Downloads/Telegram Desktop/IceTileset.tsx": {
+            "dynamicWrapping": true
+        },
+        "E9fTT7.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "GUI.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "IceTileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "InteriorTilesLITE.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "RPG Nature Tileset.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Textures-16.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "TopDownHouse_FloorsAndWalls.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "TopDownHouse_FurnitureState2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "UI books & more.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "UI cooking.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "decorative.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "econU_buildings_1.tsx": {
+            "scaleInDock": 0.25,
+            "scaleInEditor": 1
+        },
+        "econU_buildings_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "interiors_demo.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "main_Снимок_экрана_2016-10-01_в_13.32.21.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "mainlevbuild.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (1).tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (2).tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (3).tsx": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (4).tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (5).tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (6).tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0 (7).tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
+        "pixil-frame-0 (8).tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "pixil-frame-0.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "spritesheet.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "synth-ground_01-256x256.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "synth-ground_07-256x256.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tileset_dungeon.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "top-down-pack-2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "vbyb buhf.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": -45,
+                "y": 321
+            }
+        },
+        "безымянный.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 498.6666666666667,
+                "y": 499.3333333333333
+            }
+        },
+        "безымянныйvbybbuhf.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 509.33333333333337,
+                "y": 639.6666666666666
+            }
+        },
+        "лабиринт в лабиринте.tmx": {
+            "scale": 0.759814453125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 511.96709723025526,
+                "y": 512.6251526251526
+            }
+        },
+        "проект в лицей.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 422,
+                "y": 311
+            }
+        },
+        "проект оч важно.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 342,
+                "y": 371.5
+            }
+        },
+        "уровень первый тот первый по ошибке.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 553,
+                "y": 406
+            }
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/User/Downloads/Telegram Desktop",
+    "last.imagePath": "C:/Users/User/Downloads",
+    "map.height": 32,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 32,
+    "openFiles": [
+    ],
+    "project": "проект в лицей.tiled-project",
+    "recentFiles": [
+        "TopDownHouse_FloorsAndWalls.tsx",
+        "безымянный.tmx",
+        "лабиринт в лабиринте.tmx",
+        "безымянныйvbybbuhf.tmx",
+        "vbyb buhf.tmx",
+        "проект оч важно.tmx",
+        "1 уровень.tmx",
+        "уровень первый тот первый по ошибке.tmx",
+        "pixil-frame-0 (8).tsx",
+        "pixil-frame-0 (7).tsx",
+        "pixil-frame-0 (6).tsx",
+        "econU_buildings_1.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 0,
+    "tileset.tileSize": {
+        "height": 32,
+        "width": 32
+    }
+}
