@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="1">
  <tileset firstgid="1" source="pixil-frame-0.tsx"/>
  <tileset firstgid="10" source="pixil-frame-0 (5).tsx"/>
  <tileset firstgid="19" source="econU_buildings_2.tsx"/>
- <tileset firstgid="1619" source="econU_buildings_1.tsx"/>
+ <tileset firstgid="1619" source="acetone-2025128-192039-741.tsx"/>
  <layer id="12" name="Слой тайлов 12" width="20" height="20">
   <data encoding="csv">
 2237,2238,2239,2240,2241,2242,2243,2244,2245,2246,2850,2851,2852,2853,2854,2855,2856,2857,2858,2256,
