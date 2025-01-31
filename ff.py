@@ -1,27 +1,45 @@
-import pygame
 import os
+import sys
 
-from птро import load_image
+import pygame
+import pytmx
 
 # Инициализация Pygame
 pygame.init()
 
 # Настройки экрана
-screen_width, screen_height = 800, 600
+screen_width = 1280
+screen_height = 720
 screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Перемещение по карте Tiled")
 
-# Загрузка тайлов
-tile_size = 32
-map_folder = 'map'
-tiles = {}
-for filename in os.listdir(map_folder):
-    if filename.endswith('.png'):
-        tile_name = filename[:-4]  # Убираем .png
-        tiles[tile_name] = pygame.image.load(os.path.join(map_folder, filename))
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        sys.exit()
+    image = pygame.image.load(fullname)
+    if colorkey is not None:
+        image = image.convert()
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    else:
+        image = image.convert_alpha()
+    return image
 
-# Персонаж
-player_image = load_image('.png')
-player_pos = [100, 100]  # Начальная позиция персонажа
+# Загрузка карты Tiled
+tmx_data = pytmx.load_pygame('map/1 уровень.tmx')
+
+# Загрузка изображения
+player_image = load_image('z1.png')
+player_rect = player_image.get_rect()
+
+# Начальная позиция игрока
+player_rect.topleft = (100, 100)
+
+map_width = tmx_data.width * tmx_data.tilewidth
+map_height = tmx_data.height * tmx_data.tileheight
 
 # Основной игровой цикл
 running = True
@@ -30,32 +48,36 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # Управление персонажем
+    # Отображение карты
+    screen.fill((0, 0, 0))  # Очистка экрана
+    for layer in tmx_data.visible_layers:
+        for x, y, gid in layer:
+            tile = tmx_data.get_tile_image_by_gid(gid)
+            if tile:
+                screen.blit(tile, (x * tmx_data.tilewidth, y * tmx_data.tileheight))
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        player_pos[0] -= 5
+        player_rect.x -= 5
     if keys[pygame.K_RIGHT]:
-        player_pos[0] += 5
+        player_rect.x += 5
     if keys[pygame.K_UP]:
-        player_pos[1] -= 5
+        player_rect.y -= 5
     if keys[pygame.K_DOWN]:
-        player_pos[1] += 5
+        player_rect.y += 5
 
-    # Обновление камеры
-    camera_x = player_pos[0] - screen_width // 2
-    camera_y = player_pos[1] - screen_height // 2
-
-    # Отрисовка карты и персонажа
+    # Отрисовка карты и игрока
     screen.fill((0, 0, 0))  # Очистка экрана
-    for y in range(0, screen_height, tile_size):
-        for x in range(0, screen_width, tile_size):
-            # Здесь можно добавить логику для выбора тайла
-            screen.blit(tiles['grass'], (x, y))  # Пример: отрисовка травы
-
-    # Отрисовка персонажа
-    screen.blit(player_image, (player_pos[0] - camera_x, player_pos[1] - camera_y))
+    for layer in tmx_data.visible_layers:
+        for x, y, gid in layer:
+            tile = tmx_data.get_tile_image_by_gid(gid)
+            if tile:
+                screen.blit(tile, (x * tmx_data.tilewidth, y * tmx_data.tileheight))
 
     pygame.display.flip()
 
+
+    pygame.time.delay(30)  # Задержка для управления FPS
+
 pygame.quit()
+
 
