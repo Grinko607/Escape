@@ -2,6 +2,7 @@ import os
 import sqlite3
 import sys
 import pygame
+import pytmx
 
 pygame.init()
 size = WIDTH, HEIGHT = 1280, 720
@@ -129,13 +130,27 @@ def startgame():
     scaled_image = pygame.transform.scale(image, image_size)
     image_rect = scaled_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     screen.blit(scaled_image, image_rect)
+    button1_rect = pygame.Rect(300, 110, 700, 100)
+    button2_rect = pygame.Rect(300, 215, 700, 100)
+    button3_rect = pygame.Rect(300, 340, 700, 100)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                open_new_window()
-                return
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    if button1_rect.collidepoint(mouse_pos):
+                        game()
+                        return
+                    elif button2_rect.collidepoint(mouse_pos):
+                        settings_window()
+                        return
+                    elif button3_rect.collidepoint(mouse_pos):
+                        open_new_window()
+                        return
+
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -197,6 +212,58 @@ def save_to_db(user_texts):
     conn.close()
 
 
+tmx_data = pytmx.load_pygame('map/проект оч важно.tmx')
+scale = 2
+
+
+def draw_map():
+    for layer in tmx_data.visible_layers:
+        if isinstance(layer, pytmx.TiledTileLayer):
+            for x, y, gid in layer:
+                tile = tmx_data.get_tile_image_by_gid(gid)
+                if tile:
+                    screen.blit(tile, (x * tmx_data.tilewidth * scale, y * tmx_data.tileheight * scale))
+
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+def draw_rectangle():
+    rect_width, rect_height = 200, 100
+    rect_x = (WIDTH - rect_width) // 2
+    rect_y = (HEIGHT - rect_height) // 2
+    pygame.draw.rect(screen, WHITE, (rect_x, rect_y, rect_width, rect_height))
+
+    # Рисуем текст
+    font = pygame.font.Font(None, 36)
+    text_surface = font.render("старт", True, BLACK)
+    text_rect = text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + rect_height // 2))
+    screen.blit(text_surface, text_rect)
+
+
+def begin():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                rect_x = (WIDTH - 200) // 2
+                rect_y = (HEIGHT - 100) // 2
+                if rect_x <= mouse_pos[0] <= rect_x + 200 and rect_y <= mouse_pos[1] <= rect_y + 100:
+                    regist()
+
+        screen.fill((0, 0, 0))  # Очистка экрана
+        draw_map()  # Рисуем карту
+        draw_rectangle()  # Рисуем прямоугольник
+        pygame.display.flip()  # Обновление экрана
+
+    pygame.quit()
+
+
+# Запуск функции begin
+begin()
+
+
 def play_music():
     pygame.mixer.init()
     pygame.mixer.music.load('music.mp3')
@@ -212,7 +279,7 @@ def save_settings(volume, brightness):
     conn = sqlite3.connect('Escape.db')
     cursor = conn.cursor()
     cursor.execute('CREATE TABLE IF NOT EXISTS settings (volume REAL, brightness REAL)')
-    cursor.execute('DELETE FROM settings')  # Удаляем старые настройки
+    cursor.execute('DELETE FROM settings')
     cursor.execute('INSERT INTO settings (volume, brightness) VALUES (?, ?)', (volume, brightness))
     conn.commit()
     conn.close()
@@ -290,6 +357,5 @@ def settings_window():
 
 play_music()
 
-settings_window()
 
 terminate()
