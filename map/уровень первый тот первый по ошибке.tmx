@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="97">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="98">
  <tileset firstgid="1" source="Textures-16.tsx"/>
  <tileset firstgid="257" source="spritesheet.tsx"/>
  <tileset firstgid="277" source="tileset_dungeon.tsx"/>
@@ -145,5 +145,6 @@
   <object id="93" x="192" y="576" width="32" height="32"/>
   <object id="94" x="128" y="544" width="32" height="32"/>
   <object id="96" x="320" y="544" width="192" height="32"/>
+  <object id="97" x="512" y="544" width="32" height="32"/>
  </objectgroup>
 </map>
