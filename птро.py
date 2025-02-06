@@ -4,10 +4,10 @@ import sys
 import pygame
 import pytmx
 
-# Инициализация Pygame
 pygame.init()
 size = WIDTH, HEIGHT = 1280, 720
 screen = pygame.display.set_mode(size)
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -24,6 +24,7 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
+
 def play_music():
     pygame.mixer.init()
     pygame.mixer.music.load('music.mp3')
@@ -31,40 +32,44 @@ def play_music():
     pygame.mixer.music.play(-1)
 
 
-def adjust_volume(volume):
-    pygame.mixer.music.set_volume(volume)
-
-
-def save_settings(volume, brightness):
+def save_settings(volume, brightness, user_login):
+    print(user_login)
     conn = sqlite3.connect('Escape.db')
     cursor = conn.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS settings (volume REAL, brightness REAL)')
-    cursor.execute('DELETE FROM settings')
-    cursor.execute('INSERT INTO settings (volume, brightness) VALUES (?, ?)', (volume, brightness))
+    cursor.execute('SELECT id FROM регистрация WHERE Логин = ?', (user_login,))
+    result = cursor.fetchone()
+    user_id = result[0]
+    cursor.execute('CREATE TABLE IF NOT EXISTS settings (id_user INTEGER, volume REAL, brightness REAL)')
+    cursor.execute('DELETE FROM settings WHERE id_user = ?', (user_id,))
+    cursor.execute('INSERT INTO settings (id_user, volume, brightness) VALUES (?, ?, ?)', (user_id, volume, brightness))
+
     conn.commit()
     conn.close()
 
 
-def load_settings():
+def load_settings(user_login):
     conn = sqlite3.connect('Escape.db')
     cursor = conn.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS settings (volume REAL, brightness REAL)')
-    cursor.execute('SELECT volume, brightness FROM settings')
+    cursor.execute('SELECT id FROM регистрация WHERE Логин = ?', (user_login,))
+    result = cursor.fetchone()
+    if result is None:
+        return 0.5, 0.5
+    user_id = result[0]
+    cursor.execute('SELECT volume, brightness FROM settings WHERE id_user = ?', (user_id,))
     settings = cursor.fetchone()
-    conn.close()
-    if settings:
-        return settings
-    return (0.5, 1.0)  # Возвращаем значения по умолчанию, если нет сохраненных настроек
+    if settings is None:
+        return 0.5, 0.5
+
+    return settings
 
 
-def settings_window():
+def settings_window(user_login):
+    global volume, brightness
     pygame.init()
     screen = pygame.display.set_mode((600, 500))
     clock = pygame.time.Clock()
-
-    # Загрузка начальных значений
-    volume, brightness = load_settings()
-    pygame.mixer.music.set_volume(volume)  # Устанавливаем громкость музыки
+    volume, brightness = load_settings(user_login)
+    pygame.mixer.music.set_volume(volume)
 
     while True:
         for event in pygame.event.get():
@@ -74,53 +79,48 @@ def settings_window():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    save_settings(volume, brightness)  # Сохраняем настройки перед выходом
-                    return  # Закрываем окно настроек
+                    save_settings(volume, brightness, user_login)
+                    print(user_login)
+                    return
 
-            # Обработка изменения громкости и яркости
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Левый клик мыши
+                if event.button == 1:
                     mouse_x, mouse_y = event.pos
-                    # Проверка нажатия на ползунки
                     if 50 < mouse_x < 550:
-                        if 150 < mouse_y < 180:  # Ползунок громкости
-                            volume = (mouse_x - 50) / 500  # Нормируем значение
-                            pygame.mixer.music.set_volume(volume)  # Обновляем громкость музыки
-                        elif 250 < mouse_y < 280:  # Ползунок яркости
-                            brightness = (mouse_x - 50) / 500  # Нормируем значение
+                        if 150 < mouse_y < 180:
+                            volume = (mouse_x - 50) / 500
+                            pygame.mixer.music.set_volume(volume)
+                        elif 250 < mouse_y < 280:
+                            brightness = (mouse_x - 50) / 500
 
-        # Установка фона с учетом яркости
         screen.fill((int(200 * brightness), int(200 * brightness), int(200 * brightness)))
-
-        # Отображение ползунков
-        pygame.draw.rect(screen, (255, 0, 0), (50, 150, 500, 30))  # Полоска громкости
-        pygame.draw.rect(screen, (0, 255, 0), (50, 250, 500, 30))  # Полоска яркости
-        pygame.draw.rect(screen, (0, 0, 0), (50 + volume * 500 - 5, 150, 10, 30))  # Ползунок громкости
-        pygame.draw.rect(screen, (0, 0, 0), (50 + brightness * 500 - 5, 250, 10, 30))  # Ползунок яркости
-
-        # Отображение текста
+        pygame.draw.rect(screen, (255, 0, 0), (50, 150, 500, 30))
+        pygame.draw.rect(screen, (0, 255, 0), (50, 250, 500, 30))
+        pygame.draw.rect(screen, (0, 0, 0), (50 + volume * 500 - 5, 150, 10, 30))
+        pygame.draw.rect(screen, (0, 0, 0), (50 + brightness * 500 - 5, 250, 10, 30))
         font = pygame.font.Font(None, 36)
         volume_text = font.render(f'Громкость: {int(volume * 100)}%', True, (0, 0, 0))
         brightness_text = font.render(f'Яркость: {int(brightness * 100)}%', True, (0, 0, 0))
         screen.blit(volume_text, (50, 120))
         screen.blit(brightness_text, (50, 220))
+
         button_rect = pygame.Rect(200, 300, 200, 50)
         pygame.draw.rect(screen, (255, 255, 255), button_rect)
         button_text = font.render('Перейти в игру', True, (0, 0, 0))
         screen.blit(button_text, (button_rect.x + 5, button_rect.y + 5))
 
-        pygame.display.flip()
-        clock.tick(60)
+        if button_rect.collidepoint(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+            save_settings(volume, brightness, user_login)
+            startgame(volume, brightness, user_login)
+            print(user_login)
+            game(volume, brightness, user_login)
 
         pygame.display.flip()
         clock.tick(60)
+
 
 
 play_music()
-
-
-
-
 characters = [
     load_image('ch1.jpg'),
     load_image('l1.jpg'),
@@ -147,9 +147,26 @@ def change_character(direction):
     current_frame = 0
 
 
-def draw_characters(window):
-    global current_frame, frame_counter
+def load_character_from_db(user_id):
+    conn = sqlite3.connect('Escape.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT character_id FROM персонажи WHERE user_id = ?', (user_id,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+
+def draw_characters(window, user_login):
+    global current_index, frame_counter
     window.fill((255, 255, 255))
+    current_frame = 0
+
+    # Загрузка выбранного персонажа
+    user_id = get_user_id(user_login)  # Предполагается, что эта функция возвращает ID пользователя
+    selected_character_id = load_character_from_db(user_id)
+
+    if selected_character_id is not None:
+        current_index = selected_character_id  # Установить индекс выбранного персонажа
 
     left_index = (current_index - 1) % len(characters)
     right_index = (current_index + 1) % len(characters)
@@ -187,6 +204,65 @@ def draw_characters(window):
     window.blit(center_image, center_pos)
     window.blit(right_image, right_pos)
 
+    # Рисуем кнопку "Сохранить"
+    save_button_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 + 100, 100, 50)
+    pygame.draw.rect(window, (200, 200, 200), save_button_rect)
+    font = pygame.font.Font(None, 36)
+    text = font.render('Сохранить', True, (0, 0, 0))
+    window.blit(text, (save_button_rect.x + 10, save_button_rect.y + 10))
+
+    return save_button_rect
+
+
+def save_character_to_db(user_id, character_id):
+    conn = sqlite3.connect('Escape.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM персонажи WHERE user_id = ?', (user_id,))  # Удаляем старый выбор, если есть
+    cursor.execute('''
+    INSERT INTO персонажи (user_id, character_id)
+    VALUES (?, ?);
+    ''', (user_id, character_id))
+    conn.commit()
+    conn.close()
+
+
+def run_game(user_login):
+    global window, save_button_rect
+    FPS = 50
+    clock = pygame.time.Clock()
+    running = True
+    window = pygame.display.set_mode((1280, 720))
+    pygame.display.set_caption("Игра")
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    change_character(-1)
+                elif event.key == pygame.K_RIGHT:
+                    change_character(1)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    if save_button_rect.collidepoint(pos):
+                        user_id = get_user_id(user_login)
+                        save_character_to_db(user_id, current_index)
+
+    pygame.quit()
+
+
+def get_user_id(user_login):
+    conn = sqlite3.connect('Escape.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM регистрация WHERE Логин = ?', (user_login,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+
+
+
 
 FPS = 50
 clock = pygame.time.Clock()
@@ -197,7 +273,7 @@ def terminate():
     sys.exit()
 
 
-def open_new_window():
+def open_new_window(user_login):
     new_window_size = (1280, 720)
     new_window = pygame.display.set_mode(new_window_size)
     pygame.display.set_caption("Персонажи")
@@ -211,14 +287,15 @@ def open_new_window():
                     change_character(-1)
                 elif mouse_x > 2 * WIDTH // 3:
                     change_character(1)
-        draw_characters(new_window)
+        draw_characters(new_window, user_login)
         pygame.display.flip()
-        clock.tick(FPS)
+        clock.tick(60)
 
 
-def startgame():
+def startgame(volume, brightness, user_login):
     screen.fill((105, 105, 105))
     image = load_image('pixil-frame-0.png')
+    pygame.mixer.music.set_volume(volume)
     image_size = (740, 680)
     scaled_image = pygame.transform.scale(image, image_size)
     image_rect = scaled_image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
@@ -238,14 +315,28 @@ def startgame():
                         game()
                         return
                     elif button2_rect.collidepoint(mouse_pos):
-                        settings_window()
+                        settings_window(user_login)
+                        print(user_login)
                         return
                     elif button3_rect.collidepoint(mouse_pos):
-                        open_new_window()
+                        open_new_window(user_login)
                         return
 
         pygame.display.flip()
         clock.tick(FPS)
+
+
+
+def save_to_db(user_texts):
+    print('a')
+    conn = sqlite3.connect('Escape.db')
+    cursor = conn.cursor()
+    cursor.execute('''INSERT INTO регистрация (Имя, Логин, пароль) VALUES (?, ?, ?)''',
+                   (user_texts[0], user_texts[1], user_texts[2]))
+    last_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return last_id
 
 
 def regist():
@@ -269,8 +360,14 @@ def regist():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttonfuture.collidepoint(event.pos):
+                    user_login = user_texts[1]
+                    volume = 0.5
+                    brightness = 0.5
+                    startgame(volume, brightness, user_login)
                     save_to_db(user_texts)
-                    startgame()
+                    print('zzz')  # Передаем user_id в функцию старта игры
+                elif buttonpast.collidepoint(event.pos):
+                    main()
                 for i, rect in enumerate(input_rects):
                     if rect.collidepoint(event.pos):
                         active_index = i
@@ -294,18 +391,10 @@ def regist():
         clock.tick(60)
 
 
-def save_to_db(user_texts):
-    conn = sqlite3.connect('Escape.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO регистрация (Имя, Логин, пароль) VALUES (?, ?, ?)
-    ''', (user_texts[0], user_texts[1], user_texts[2]))
-    conn.commit()
-    conn.close()
-
 
 def load_map(filename):
     return pytmx.load_pygame(filename)
+
 
 def draw_map(screen, tmx_data, camera_x, camera_y):
     for layer in tmx_data.visible_layers:
@@ -315,10 +404,12 @@ def draw_map(screen, tmx_data, camera_x, camera_y):
                 if tile:
                     screen.blit(tile, (x * tmx_data.tilewidth + camera_x, y * tmx_data.tileheight + camera_y))
 
+
 def center_camera(screen_width, screen_height, map_width, map_height):
     camera_x = (screen_width - map_width) // 2
     camera_y = (screen_height - map_height) // 2
     return camera_x, camera_y
+
 
 def draw_button(screen, text, x, y, width, height):
     pygame.draw.rect(screen, (200, 200, 200), (x, y, width, height))
@@ -332,7 +423,6 @@ def main():
     begin = load_map('map/проект оч важно.tmx')
     map_width = begin.width * begin.tilewidth
     map_height = begin.height * begin.tileheight
-
     camera_x, camera_y = center_camera(WIDTH, HEIGHT, map_width, map_height)
     running = True
 
@@ -340,7 +430,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Левый клик мыши
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_x, mouse_y = event.pos
                 if (WIDTH // 2 - 100 < mouse_x < WIDTH // 2 + 100) and (HEIGHT // 2 - 30 < mouse_y < HEIGHT // 2 + 30):
                     regist()
@@ -354,6 +444,7 @@ def main():
 
     pygame.quit()
 
+
 def create_collision_objects(tmx_data, scale_factor):
     collision_objects = []
     for layer in tmx_data.visible_layers:
@@ -364,11 +455,13 @@ def create_collision_objects(tmx_data, scale_factor):
                 collision_objects.append(obj_rect)
     return collision_objects
 
+
 def check_collisions(player_rect, collision_objects):
     for obj in collision_objects:
         if player_rect.colliderect(obj):
             return True
     return False
+
 
 def move_player(player_rect, keys, map_width, map_height):
     original_rect = player_rect.copy()
@@ -384,12 +477,14 @@ def move_player(player_rect, keys, map_width, map_height):
     original_rect.y = max(0, min(original_rect.y, map_height - player_rect.height))
     return original_rect
 
+
 def update_camera(player_rect, screen_width, screen_height, map_width, map_height):
     camera_x = player_rect.centerx - screen_width // 2
     camera_y = player_rect.centery - screen_height // 2
     camera_x = max(0, min(camera_x, map_width - screen_width))
     camera_y = max(0, min(camera_y, map_height - screen_height))
     return camera_x, camera_y
+
 
 def drawmap(screen, tmx_data, camera_x, camera_y, scale_factor):
     for layer in tmx_data.visible_layers:
@@ -401,19 +496,21 @@ def drawmap(screen, tmx_data, camera_x, camera_y, scale_factor):
                                                   (tile.get_width() * scale_factor, tile.get_height() * scale_factor))
                     screen.blit(tile, (x * tmx_data.tilewidth * scale_factor - camera_x,
                                        y * tmx_data.tileheight * scale_factor - camera_y))
+
+
 def init_game():
     pygame.init()
     screen_width = 1280
     screen_height = 720
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Перемещение по карте Tiled")
+    pygame.display.set_caption("")
     return screen, screen_width, screen_height
 
 
-def game():
+def game(volume, brightness, user_login):
     screen, screen_width, screen_height = init_game()
     tmx_data = load_map('map/уровень первый тот первый по ошибке.tmx')
-
+    pygame.mixer.music.set_volume(volume)
     player_image = load_image('z1.png')
     player_rect = player_image.get_rect()
     player_rect.topleft = (400, 350)
@@ -447,8 +544,8 @@ def game():
 
     pygame.quit()
 
-if __name__ == "__main__":
-    main()
 
+
+play_music()
+main()
 terminate()
-
