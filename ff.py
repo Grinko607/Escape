@@ -37,7 +37,7 @@ characters = [
 animation_frames = {
     0: [load_image('z2.png'), load_image('z3.png'), load_image('z4.png'), load_image('z5.png')],
     1: [load_image('ch2.jpg'), load_image('ch3.jpg')],
-    2: [load_image('l2.jpg'), load_image('l3.jpg'), load_image('l4.jpg'), load_image('l5.jpg')],
+    2: [load_image('l2.png'), load_image('l3.png'), load_image('l4.png'), load_image('l5.png')],
     3: [load_image('o2.png'), load_image('o3.png')]
 }
 
@@ -486,6 +486,17 @@ def create_collision_objects(tmx_data, scale_factor):
     return collision_objects
 
 
+def create_level_objects(tmx_data, scale_factor):
+    level_objects = []
+    for layer in tmx_data.visible_layers:
+        if isinstance(layer, pytmx.TiledObjectGroup) and layer.name == "уровень":
+            for obj in layer:
+                obj_rect = pygame.Rect(obj.x * scale_factor, obj.y * scale_factor,
+                                       obj.width * scale_factor, obj.height * scale_factor)
+                level_objects.append(obj_rect)
+    return level_objects
+
+
 def check_collisions(player_rect, collision_objects):
     for obj in collision_objects:
         if player_rect.colliderect(obj):
@@ -537,6 +548,68 @@ def init_game():
     return screen, screen_width, screen_height
 
 
+# Функция для загрузки объектов из карты
+def load_map_objects(tmx_data):
+    objects = {}
+    for layer in tmx_data.visible_layers:
+        if isinstance(layer, pytmx.TiledObjectGroup) and layer.name in ['красный', 'синий', 'розовый', 'жёлтый']:
+            objects[layer.name] = [obj for obj in layer]
+    return objects
+
+# Функция для сохранения счета в БД
+def save_score(user_login, score):
+    conn = sqlite3.connect('Escape.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO scores (user_login, score) VALUES (?, ?)', (user_login, score))
+    conn.commit()
+    conn.close()
+
+# Глобальные переменные для соединения объектов
+objects_to_connect = []
+connected_pairs = []
+
+# Функция для соединения объектов
+def connect_objects(object1, object2):
+    if (object1, object2) not in connected_pairs and (object2, object1) not in connected_pairs:
+        connected_pairs.append((object1, object2))
+        print(f'Соединены объекты: {object1} и {object2}')
+        draw_connection(object1, object2)  # Визуализация соединения
+
+# Функция для проверки, соединены ли все пары
+def all_pairs_connected():
+    total_pairs = len(objects_to_connect) // 2
+    return len(connected_pairs) == total_pairs
+
+# Функция для проверки соединения и обновления счета
+def check_connection_and_update_score(user_login, timer_start):
+    score = 0
+    if all_pairs_connected():
+        elapsed_time = pygame.time.get_ticks() - timer_start
+        if elapsed_time <= 15000:
+            score += 5
+        elif elapsed_time <= 30000:
+            score += 2
+        elif elapsed_time <= 60000:
+            score += 1
+
+        if elapsed_time < 60000:
+            score += 1
+
+        save_score(user_login, score)
+
+# Функция для обработки клика на объект
+def on_object_click(object):
+    if object not in objects_to_connect:
+        objects_to_connect.append(object)
+    if len(objects_to_connect) == 2:
+        connect_objects(objects_to_connect[0], objects_to_connect[1])
+        objects_to_connect.clear()
+
+# Функция для рисования линии между двумя объектами
+def draw_connection(object1, object2):
+    pygame.draw.line(screen, (255, 0, 0), (object1.x, object1.y), (object2.x, object2.y), 5)
+
+
 def game(volume, brightness, user_login):
     screen, screen_width, screen_height = init_game()
     tmx_data = load_map('map/уровень первый тот первый по ошибке.tmx')
@@ -551,53 +624,72 @@ def game(volume, brightness, user_login):
     scale_factor = 2
     map_width = tmx_data.width * tmx_data.tilewidth * scale_factor
     map_height = tmx_data.height * tmx_data.tileheight * scale_factor
-
     collision_objects = create_collision_objects(tmx_data, scale_factor)
+    level_objects = create_level_objects(tmx_data, scale_factor)
 
-    # Настройка таймера
     timer_start = pygame.time.get_ticks()
-    timer_duration = 30000  # 30 секунд
-    allan_image_frames = load_allan_images()  # Функция для загрузки изображений Аллана
+    timer_duration = 20000  # 20 секунд
+    allan_image_frames = load_allan_images()
     allan_rect = player_rect.copy()  # Аллан появляется в том же месте, что и игрок
     allan_animation_index = 0
     allan_speed = 3  # Скорость Аллана
     allan_spawned = False
     show_screamer = False
-    screamer_image = load_image('скример.jpg')  # Загрузка изображения скримера
-    screamer_display_time = 10000  # 10 секунд
+    screamer_image = load_image('скример.jpg')
+    screamer_display_time = 5000
     screamer_start_time = 0
-
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print(event.pos)
+                if (400 <= event.pos[0] <= 590) and (540 <= event.pos[1] <= 590):
+                    print('загрузка')
+                    player_rect = None  # Скрываем игрока
+                    allan_rect = None
+                    screen, screen_width, screen_height = init_game()
+                    tmx_data = load_map('map/vbyb buhf.tmx')
+                    print('lll')
+                    # Обновление экрана после загрузки карты
+                    screen.fill((0, 0, 0))
+                     # Функция для отрисовки карты
+                    pygame.display.flip()
+                    # Отладочное сообщение
+        # ... существующий код ...
 
         keys = pygame.key.get_pressed()
         original_rect = move_player(player_rect, keys, map_width, map_height)
-
         if not check_collisions(original_rect, collision_objects):
             player_rect = original_rect
 
         camera_x, camera_y = update_camera(player_rect, screen_width, screen_height, map_width, map_height)
 
-        # Логика таймера
         elapsed_time = pygame.time.get_ticks() - timer_start
         if elapsed_time >= timer_duration and not allan_spawned:
-            allan_spawned = True  # Аллан появляется после 30 секунд
+            allan_spawned = True  # Аллан появляется через 20 секунд
+            allan_rect.topleft = (400, 350)  # Начальная позиция Аллана
 
-        # Обновление позиции Аллана, если он появился
         if allan_spawned:
-            # Аллан движется к игроку
-            if player_rect.x < allan_rect.x and not check_collisions(allan_rect.move(-allan_speed, 0), collision_objects):
-                allan_rect.x -= allan_speed
-            elif player_rect.x > allan_rect.x and not check_collisions(allan_rect.move(allan_speed, 0), collision_objects):
-                allan_rect.x += allan_speed
+            # Обновление позиции Аллана
+            if allan_rect.x < player_rect.x:
+                new_rect = allan_rect.move(allan_speed, 0)
+                if not check_collisions(new_rect, collision_objects):
+                    allan_rect.x += allan_speed
+            elif allan_rect.x > player_rect.x:
+                new_rect = allan_rect.move(-allan_speed, 0)
+                if not check_collisions(new_rect, collision_objects):
+                    allan_rect.x -= allan_speed
 
-            if player_rect.y < allan_rect.y and not check_collisions(allan_rect.move(0, -allan_speed), collision_objects):
-                allan_rect.y -= allan_speed
-            elif player_rect.y > allan_rect.y and not check_collisions(allan_rect.move(0, allan_speed), collision_objects):
-                allan_rect.y += allan_speed
+            if allan_rect.y < player_rect.y:
+                new_rect = allan_rect.move(0, allan_speed)
+                if not check_collisions(new_rect, collision_objects):
+                    allan_rect.y += allan_speed
+            elif allan_rect.y > player_rect.y:
+                new_rect = allan_rect.move(0, -allan_speed)
+                if not check_collisions(new_rect, collision_objects):
+                    allan_rect.y -= allan_speed
 
             # Проверка на столкновение между игроком и Алланом
             if player_rect.colliderect(allan_rect):
@@ -626,7 +718,8 @@ def game(volume, brightness, user_login):
             screamer_surface = pygame.transform.scale(screamer_image, (1280, 720))
             screen.blit(screamer_surface, (0, 0))
             if pygame.time.get_ticks() - screamer_start_time >= screamer_display_time:
-                startgame(volume, brightness, user_login, character_id)  # Перезапуск игры
+                startgame(volume, brightness, user_login,
+                          character_id)  # Запуск функции gamestart после показа скримера
 
         pygame.display.flip()
         pygame.time.delay(30)
@@ -634,9 +727,9 @@ def game(volume, brightness, user_login):
     pygame.quit()
 
 
-
-
-
+def forest(volume, brightness, user_login):
+    # Логика функции forest, аналогичная функции game, но с другой картой
+    pass
 
 
 def load_character_image(character_id):
@@ -649,14 +742,15 @@ def load_character_image(character_id):
     }
     return character_images.get(character_id, load_image('z1.png'))  # Default image if ID not found
 
+
 def load_allan_images():
     # Function to load Allan's images
-    return [load_image(f'аллан{i}.jpg') for i in range(1, 6)]
+    return [load_image(f'аллан{i}.png') for i in range(1, 6)]
+
 
 def load_allan_character():
     # Function to initialize Allan's position
     return pygame.Rect(100, 100, 50, 50)  # Example position and size
-
 
 
 if __name__ == "__main__":
