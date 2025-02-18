@@ -531,8 +531,10 @@ def init_game():
     pygame.display.set_caption("")
     return screen, screen_width, screen_height
 
+
 objects_to_connect = []
 connected_pairs = []
+
 
 def save_score(user_login, score):
     conn = sqlite3.connect('Escape.db')
@@ -594,7 +596,7 @@ def connect_objects(object1, object2):
 def on_object_click(object):
     if object not in objects_to_connect:
         objects_to_connect.append(object)
-    if len(objects_to_connect) % 2 == 0:  # Check if the number of objects is even
+    if len(objects_to_connect) % 2 == 0:
         connect_objects(objects_to_connect[-2], objects_to_connect[-1])
 
 
@@ -689,6 +691,10 @@ def game(volume, brightness, user_login):
                     allan_image = allan_image_frames[allan_animation_index]
                     screen.blit(allan_image, (allan_rect.x - camera_x, allan_rect.y - camera_y))
                     allan_animation_index = (allan_animation_index + 1) % len(allan_image_frames)
+                message = "По-моему, где-то звонит телефон. Давай найдём его."
+                message_font = pygame.font.Font(None, 36)
+                message_surface = message_font.render(message, True, (0, 0, 0))  # Black color for the message
+                screen.blit(message_surface, (20, screen_height - 50))
                 timer_text = f'Time: {elapsed_time // 1000}'
                 font = pygame.font.Font(None, 36)
                 timer_surface = font.render(timer_text, True, (255, 255, 255))
@@ -704,12 +710,12 @@ def game(volume, brightness, user_login):
                 pygame.time.delay(20)
     pygame.quit()
 
+
 def game_loop(user_login, tmx_data, volume, brightness):
     running = True
     score = 0
     timer_start = pygame.time.get_ticks()
-    clock = pygame.time.Clock()  # Создаем объект Clock для управления FPS
-
+    clock = pygame.time.Clock()
     while running:
         elapsed_time = pygame.time.get_ticks() - timer_start
         for event in pygame.event.get():
@@ -720,8 +726,10 @@ def game_loop(user_login, tmx_data, volume, brightness):
                 for layer in tmx_data.visible_layers:
                     if isinstance(layer, pytmx.TiledObjectGroup):
                         for obj in layer:
-                            if hasattr(obj, 'x') and hasattr(obj, 'y') and hasattr(obj, 'width') and hasattr(obj, 'height'):
-                                if (obj.x <= mouse_pos[0] <= obj.x + obj.width) and (obj.y <= mouse_pos[1] <= obj.y + obj.height):
+                            if hasattr(obj, 'x') and hasattr(obj, 'y') and hasattr(obj, 'width') and hasattr(obj,
+                                                                                                             'height'):
+                                if (obj.x <= mouse_pos[0] <= obj.x + obj.width) and (
+                                        obj.y <= mouse_pos[1] <= obj.y + obj.height):
                                     on_object_click(obj)
 
         screen.fill((0, 0, 0))
@@ -737,7 +745,6 @@ def game_loop(user_login, tmx_data, volume, brightness):
         clock.tick(30)
 
 
-
 def display_score(elapsed_time, score):
     font = pygame.font.Font(None, 36)
     score_text = f'Score: {score}'
@@ -749,15 +756,16 @@ def display_score(elapsed_time, score):
     screen.blit(timer_surface, (10, 50))
 
 
-
 TILE_SIZE = 180
 FPS = 30
+
 
 def init_gametwo():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Пятнашки")
+    pygame.display.set_caption("")
     return screen
+
 
 def load_imagesplay():
     images = []
@@ -766,26 +774,32 @@ def load_imagesplay():
         images.append(pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE)))
     return images
 
+
 def create_board():
     numbers = [1, 2, 3, 4, None, None, None, None]
     random.shuffle(numbers)
     return [numbers[i:i + 4] for i in range(0, len(numbers), 4)]
+
 
 def draw_board(screen, image_path, board, empty_pos):
     box_image = pygame.image.load(image_path)
     box_image = pygame.transform.scale(box_image, (WIDTH, HEIGHT))
     screen.blit(box_image, (0, 0))
     for row in range(3):
-        pygame.draw.line(screen, (255, 0, 0), (120, 200 + row * TILE_SIZE), (120 + 4 * TILE_SIZE, 200 + row * TILE_SIZE), 2)
+        pygame.draw.line(screen, (255, 0, 0), (385, 200 + row * TILE_SIZE),
+                         (385 + 4 * TILE_SIZE, 200 + row * TILE_SIZE), 2)
     for col in range(5):
-        pygame.draw.line(screen, (255, 0, 0), (120 + col * TILE_SIZE, 200), (120 + col * TILE_SIZE, 200 + 2 * TILE_SIZE), 2)
+        pygame.draw.line(screen, (255, 0, 0), (385 + col * TILE_SIZE, 200),
+                         (385 + col * TILE_SIZE, 200 + 2 * TILE_SIZE), 2)
 
     for y in range(2):
         for x in range(4):
             if board[y][x] is not None:
-                screen.blit(images[board[y][x] - 1], (120 + x * TILE_SIZE, 200 + y * TILE_SIZE))
+                screen.blit(images[board[y][x] - 1], (385 + x * TILE_SIZE, 200 + y * TILE_SIZE))
     if empty_pos is not None:
-        pygame.draw.circle(screen, (255, 0, 0), (120 + empty_pos[0] * TILE_SIZE + TILE_SIZE // 2, 200 + empty_pos[1] * TILE_SIZE + TILE_SIZE // 2), 10)
+        pygame.draw.circle(screen, (255, 0, 0), (
+            385 + empty_pos[0] * TILE_SIZE + TILE_SIZE // 2, 200 + empty_pos[1] * TILE_SIZE + TILE_SIZE // 2), 10)
+
 
 def can_move(board, empty_pos, tile_pos):
     if tile_pos[0] == empty_pos[0] and abs(tile_pos[1] - empty_pos[1]) == 1:
@@ -794,11 +808,15 @@ def can_move(board, empty_pos, tile_pos):
         return True
     return False
 
+
 def move_tile(board, empty_pos, tile_pos):
-    board[empty_pos[1]][empty_pos[0]], board[tile_pos[1]][tile_pos[0]] = board[tile_pos[1]][tile_pos[0]], board[empty_pos[1]][empty_pos[0]]
+    board[empty_pos[1]][empty_pos[0]], board[tile_pos[1]][tile_pos[0]] = board[tile_pos[1]][tile_pos[0]], \
+        board[empty_pos[1]][empty_pos[0]]
+
 
 def is_solved(board):
     return board == [[1, 2, 3, 4], [None, None, None, None]]
+
 
 def update_score(user_login, elapsed_time):
     score = 0
@@ -810,12 +828,13 @@ def update_score(user_login, elapsed_time):
         score = 3
     elif elapsed_time < 25000:
         score = 2
-    elif elapsed_time < 30000:
+    elif elapsed_time < 60000:
         score = 1
     if score > 0:
         current_score = get_latest_score(user_login)
         new_score = current_score + score
         save_score(user_login, new_score)
+
 
 def get_latest_score(user_login):
     conn = sqlite3.connect('Escape.db')
@@ -825,13 +844,17 @@ def get_latest_score(user_login):
     conn.close()
     return result[0] if result else 0
 
+
 def get_settings(user_login):
     conn = sqlite3.connect('Escape.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT volume, brightness FROM settings WHERE id_user = (SELECT id FROM регистрация WHERE Логин = ?)', (user_login,))
+    cursor.execute(
+        'SELECT volume, brightness FROM settings WHERE id_user = (SELECT id FROM регистрация WHERE Логин = ?)',
+        (user_login,))
     result = cursor.fetchone()
     conn.close()
     return result if result else (1.0, 1.0)
+
 
 def play_gametwo(user_login):
     global images
@@ -852,7 +875,7 @@ def play_gametwo(user_login):
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
-                tile_x = (mouse_x - 120) // TILE_SIZE
+                tile_x = (mouse_x - 300) // TILE_SIZE
                 tile_y = (mouse_y - 200) // TILE_SIZE
                 if 0 <= tile_x < 4 and 0 <= tile_y < 2:
                     if board[tile_y][tile_x] is not None:
@@ -863,7 +886,7 @@ def play_gametwo(user_login):
             if event.type == pygame.MOUSEBUTTONUP:
                 if dragging_tile is not None:
                     mouse_x, mouse_y = event.pos
-                    tile_x = (mouse_x - 170) // TILE_SIZE
+                    tile_x = (mouse_x - 300) // TILE_SIZE
                     tile_y = (mouse_y - 200) // TILE_SIZE
                     if can_move(board, empty_pos, (tile_x, tile_y)):
                         move_tile(board, empty_pos, (tile_x, tile_y))
@@ -913,7 +936,6 @@ def forest(volume, brightness, user_login):
     screamer_display_time = 5000
     screamer_start_time = 0
     running = True
-
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -1022,6 +1044,13 @@ def forest(volume, brightness, user_login):
                 font = pygame.font.Font(None, 36)
                 timer_surface = font.render(timer_text, True, (255, 255, 255))
                 screen.blit(timer_surface, (10, 10))
+                message = "Ого, как много снега! Нам будет нелегко пробраться через него."
+                message2 = "Давай попробуем пойти по этой тропинке. Может быть, она куда-нибудь нас выведет."
+                message_font = pygame.font.Font(None, 36)
+                message_surface = message_font.render(message, True, (0, 0, 0))
+                message_surface2 = message_font.render(message2, True, (0, 0, 0))
+                screen.blit(message_surface, (20, screen_height - 70))
+                screen.blit(message_surface2, (20, screen_height - 30))
                 if show_screamer:
                     screamer_surface = pygame.transform.scale(screamer_image, (1280, 720))
                     screen.blit(screamer_surface, (0, 0))
@@ -1033,26 +1062,17 @@ def forest(volume, brightness, user_login):
 
 
 def three(user_login, volume, brightness):
-    # Initialize Pygame
     pygame.init()
     screen = pygame.display.set_mode((1280, 720))
     pygame.display.set_caption("Congratulations")
-
-    # Fetch score from the database
     score = get_latest_score(user_login)
-
-    # Load the image
-    background_image = pygame.image.load('three.jpg')
+    background_image = pygame.image.load('data/three.jpg')
     background_image = pygame.transform.scale(background_image, (1280, 720))
-
-    # Set font
     font = pygame.font.Font(None, 74)
     text = font.render("Поздравляю, ты сбежал от Алана! Твой счёт: " + str(score), True, (255, 255, 255))
     button_font = pygame.font.Font(None, 36)
     button_text = button_font.render("Сбежать", True, (255, 255, 255))
-
-    # Button dimensions
-    button_rect = pygame.Rect(540, 600, 200, 50)  # Centered button
+    button_rect = pygame.Rect(540, 600, 200, 50)
 
     running = True
     while running:
@@ -1074,21 +1094,16 @@ def three(user_login, volume, brightness):
                         character_id = existing_character[0] if existing_character else 1
                     else:
                         character_id = 1
-                    startgame(volume, brightness, user_login, character_id)  # Call the start game function
-
-        # Fill the screen with the background image
+                    startgame(volume, brightness, user_login, character_id)
         screen.blit(background_image, (0, 0))
-
-        # Draw the text
         screen.blit(text, (50, 200))
-
-        # Draw the button
-        pygame.draw.rect(screen, (0, 128, 0), button_rect)  # Green button
+        pygame.draw.rect(screen, (0, 128, 0), button_rect)
         screen.blit(button_text, (button_rect.x + 10, button_rect.y + 10))
 
         pygame.display.flip()
 
     pygame.quit()
+
 
 def reset_score(user_login):
     conn = sqlite3.connect('Escape.db')
@@ -1096,6 +1111,7 @@ def reset_score(user_login):
     cursor.execute('UPDATE scores SET score = 0 WHERE user_login = ?', (user_login,))
     conn.commit()
     conn.close()
+
 
 def load_character_image(character_id):
     character_images = {

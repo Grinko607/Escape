@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="41">
  <tileset firstgid="1" source="acetone-2025128-192039-741.tsx"/>
  <tileset firstgid="1601" source="econU_buildings_2.tsx"/>
  <tileset firstgid="3201" source="pixil-frame-0 (5).tsx"/>
  <tileset firstgid="3210" source="pixil-frame-0 (4).tsx"/>
  <tileset firstgid="3219" source="pixil-frame-0 (3).tsx"/>
- <tileset firstgid="3399" source="pixil-frame-0 (2).tsx"/>
- <tileset firstgid="3408" source="pixil-frame-0 (1).tsx"/>
+ <tileset firstgid="3228" source="pixil-frame-0 (2).tsx"/>
+ <tileset firstgid="3237" source="pixil-frame-0 (1).tsx"/>
  <layer id="6" name="Слой тайлов 6" width="32" height="32">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -37,10 +37,10 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3219,3220,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3222,3223,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3399,3400,3401,0,0,0,0,0,0,0,
-0,0,0,0,0,0,3408,3409,3410,0,0,0,0,0,0,0,0,0,0,0,0,0,3402,3403,3404,0,0,0,0,0,0,0,
-0,0,0,0,0,0,3411,3412,3413,0,0,0,0,0,0,0,0,0,0,0,0,0,3405,3406,3407,0,0,0,0,0,0,0,
-0,0,0,0,0,0,3414,3415,3416,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3228,3229,3230,0,0,0,0,0,0,0,
+0,0,0,0,0,0,3237,3238,3239,0,0,0,0,0,0,0,0,0,0,0,0,0,3231,3232,3233,0,0,0,0,0,0,0,
+0,0,0,0,0,0,3240,3241,3242,0,0,0,0,0,0,0,0,0,0,0,0,0,3234,3235,3236,0,0,0,0,0,0,0,
+0,0,0,0,0,0,3243,3244,3245,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
  <layer id="5" name="Слой тайлов 5" width="32" height="32">
@@ -194,8 +194,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,1646,1646,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,1646,1646,1646,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -223,4 +223,44 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,705,706,707,708,709,710,711
 </data>
  </layer>
+ <objectgroup id="7" name="Collision" opacity="0">
+  <object id="1" x="0" y="384" width="224" height="32"/>
+  <object id="2" x="96" y="352" width="96"/>
+  <object id="3" x="96" y="416" width="128" height="32"/>
+  <object id="4" x="160" y="448" width="128" height="32"/>
+  <object id="5" x="192" y="480" width="64" height="32"/>
+  <object id="6" x="0" y="608" width="32" height="32"/>
+  <object id="7" x="0" y="640" width="128" height="64"/>
+  <object id="8" x="64" y="704" width="64" height="32"/>
+  <object id="9" x="0" y="544" width="32" height="64"/>
+  <object id="11" x="160" y="800" width="96" height="32"/>
+  <object id="12" x="192" y="768" width="64" height="32"/>
+  <object id="13" x="256" y="768" width="128" height="96"/>
+  <object id="14" x="320" y="736" width="32" height="32"/>
+  <object id="15" x="352" y="736" width="32" height="32"/>
+  <object id="17" x="512" y="416" width="192" height="32"/>
+  <object id="18" x="544" y="448" width="192" height="32"/>
+  <object id="19" x="736" y="448" width="64"/>
+  <object id="20" x="544" y="352" width="288" height="64"/>
+  <object id="21" x="704" y="416" width="128" height="128"/>
+  <object id="22" x="608" y="480" width="96" height="32"/>
+  <object id="23" x="480" y="416" width="32" height="32"/>
+  <object id="24" x="384" y="576" width="96" height="64"/>
+  <object id="25" x="448" y="640" width="128" height="64"/>
+  <object id="26" x="576" y="672" width="64" height="64"/>
+  <object id="27" x="640" y="800" width="160" height="64"/>
+  <object id="28" x="768" y="864" width="32" height="64"/>
+  <object id="29" x="416" y="928" width="192" height="64"/>
+  <object id="30" x="480" y="992" width="160" height="32"/>
+  <object id="31" x="0" y="864" width="160" height="160"/>
+  <object id="32" x="0" y="0" width="416" height="96"/>
+  <object id="33" x="384" y="256" width="128" height="64"/>
+  <object id="34" x="32" y="96" width="256" height="96"/>
+  <object id="35" x="224" y="192" width="64" height="32"/>
+  <object id="36" x="608" y="128" width="128" height="64"/>
+  <object id="37" x="448" y="32" width="64" height="96"/>
+  <object id="38" x="704" y="0" width="128" height="64"/>
+  <object id="39" x="640" y="192" width="64" height="32"/>
+  <object id="40" x="672" y="192"/>
+ </objectgroup>
 </map>
