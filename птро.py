@@ -33,7 +33,6 @@ def play_music():
 
 
 def save_settings(volume, brightness, user_login):
-    print(user_login)
     conn = sqlite3.connect('Escape.db')
     cursor = conn.cursor()
     cursor.execute('SELECT id FROM регистрация WHERE Логин = ?', (user_login,))
@@ -80,7 +79,6 @@ def settings_window(user_login):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     save_settings(volume, brightness, user_login)
-                    print(user_login)
                     return
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -122,17 +120,17 @@ def settings_window(user_login):
 
 play_music()
 characters = [
-    load_image('ch1.jpg'),
-    load_image('l1.jpg'),
-    load_image('o1.jpg'),
+    load_image('ch1.png'),
+    load_image('l1.png'),
+    load_image('o1.png'),
     load_image('z1.png')
 ]
 
 animation_frames = {
     0: [load_image('z2.png'), load_image('z3.png'), load_image('z4.png'), load_image('z5.png')],
-    1: [load_image('ch2.jpg'), load_image('ch3.jpg')],
-    2: [load_image('l2.jpg'), load_image('l3.jpg'), load_image('l4.jpg'), load_image('l5.jpg')],
-    3: [load_image('o2.jpg'), load_image('o3.jpg')]
+    1: [load_image('ch2.png'), load_image('ch3.png')],
+    2: [load_image('l2.png'), load_image('l3.png'), load_image('l4.png'), load_image('l5.png')],
+    3: [load_image('o2.png'), load_image('o3.png')]
 }
 
 current_index = 0
@@ -363,7 +361,7 @@ def regist():
                     user_login = user_texts[1]
                     volume = 0.5
                     brightness = 0.5
-                    startgame(volume, brightness, user_login)
+                    three(volume, brightness, user_login)
                     save_to_db(user_texts)
                     print('zzz')  # Передаем user_id в функцию старта игры
                 elif buttonpast.collidepoint(event.pos):
@@ -543,8 +541,169 @@ def game(volume, brightness, user_login):
         pygame.time.delay(30)
 
     pygame.quit()
+def three(volume, brightness, user_login):
+    screen, screen_width, screen_height = init_game()
+    tmx_data = load_map('map/безымянный.tmx')
+    pygame.mixer.music.set_volume(volume)
+    character_id = load_character_from_db(user_login)
+    player_image = load_character_image(character_id)
+    player_rect = player_image.get_rect()
+    player_rect.topleft = (400, 350)
+    scale_factor = 2
+    map_width = tmx_data.width * tmx_data.tilewidth * scale_factor
+    map_height = tmx_data.height * tmx_data.tileheight * scale_factor
+    collision_objects = create_collision_objects(tmx_data, scale_factor)
+    timer_start = pygame.time.get_ticks()
+    timer_duration = 20000
+    player_sprite = pygame.sprite.Sprite()
+    player_sprite.image = player_image
+    player_sprite.rect = player_rect
+    allan_image_frames = load_allan_images()
+    allan_rect = player_rect.copy()
+    allan_sprite = pygame.sprite.Sprite()
+    allan_sprite.image = allan_image_frames[0]
+    allan_sprite.rect = allan_rect
+    allan_animation_index = 0
+    allan_speed = 3
+    allan_spawned = False
+    show_screamer = False
+    screamer_image = load_image('скример.jpg')
+    screamer_display_time = 5000
+    screamer_start_time = 0
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print(event.pos)
+                if (600 <= event.pos[0] <= 900) and (200 <= event.pos[1] <= 300):
+                    player_rect = None
+                    allan_rect = None
+                    screen, screen_width, screen_height = init_game()
+        keys = pygame.key.get_pressed()
+        if player_rect is not None:
+            original_rect = move_player(player_rect, keys, map_width, map_height)
+            if original_rect is not None and not check_collisions(original_rect, collision_objects):
+                player_rect = original_rect
+                player_sprite.rect = player_rect
+                camera_x, camera_y = update_camera(player_rect, screen_width, screen_height, map_width, map_height)
+                elapsed_time = pygame.time.get_ticks() - timer_start
+                if elapsed_time >= timer_duration and not allan_spawned:
+                    allan_spawned = True
+                    allan_rect.topleft = (400, 350)
+                if allan_spawned:
+                    allan_sprite.rect = allan_rect
+                    allan_image = allan_image_frames[allan_animation_index]
+                    allan_sprite.image = allan_image
+
+                screen.fill((0, 0, 0))
+                drawmap(screen, tmx_data, camera_x, camera_y, scale_factor)
+                screen.blit(player_sprite.image, (player_sprite.rect.x - camera_x, player_sprite.rect.y - camera_y))
+
+                if allan_spawned:
+                    screen.blit(allan_sprite.image, (allan_sprite.rect.x - camera_x, allan_sprite.rect.y - camera_y))
+                    allan_animation_index = (allan_animation_index + 1) % len(allan_image_frames)
+                    if allan_rect.x < player_rect.x:
+                        new_rect = allan_rect.move(allan_speed, 0)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.x += allan_speed
+                    elif allan_rect.x > player_rect.x:
+                        new_rect = allan_rect.move(-allan_speed, 0)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.x -= allan_speed
+                    if allan_rect.y < player_rect.y:
+                        new_rect = allan_rect.move(0, allan_speed)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.y += allan_speed
+                    elif allan_rect.y > player_rect.y:
+                        new_rect = allan_rect.move(0, -allan_speed)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.y -= allan_speed
+                    if player_rect.colliderect(allan_rect):
+                        show_screamer = True
+                        screamer_start_time = pygame.time.get_ticks()
+                screen.fill((0, 0, 0))
+                drawmap(screen, tmx_data, camera_x, camera_y, scale_factor)
+                screen.blit(player_image, (player_rect.x - camera_x, player_rect.y - camera_y))
+                if allan_spawned:
+                    allan_image = allan_image_frames[allan_animation_index]
+                    screen.blit(allan_image, (allan_rect.x - camera_x, allan_rect.y - camera_y))
+                    allan_animation_index = (allan_animation_index + 1) % len(allan_image_frames)
+                player_sprite.rect = player_rect
+                camera_x, camera_y = update_camera(player_rect, screen_width, screen_height, map_width, map_height)
+                elapsed_time = pygame.time.get_ticks() - timer_start
+                if elapsed_time >= timer_duration and not allan_spawned:
+                    allan_spawned = True
+                    allan_rect.topleft = (400, 350)
+                if allan_spawned:
+                    allan_sprite.rect = allan_rect
+                    allan_image = allan_image_frames[allan_animation_index]
+                    allan_sprite.image = allan_image
+
+                screen.fill((0, 0, 0))
+                drawmap(screen, tmx_data, camera_x, camera_y, scale_factor)
+                screen.blit(player_sprite.image, (player_sprite.rect.x - camera_x, player_sprite.rect.y - camera_y))
+
+                if allan_spawned:
+                    screen.blit(allan_sprite.image, (allan_sprite.rect.x - camera_x, allan_sprite.rect.y - camera_y))
+                    allan_animation_index = (allan_animation_index + 1) % len(allan_image_frames)
+                    if allan_rect.x < player_rect.x:
+                        new_rect = allan_rect.move(allan_speed, 0)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.x += allan_speed
+                    elif allan_rect.x > player_rect.x:
+                        new_rect = allan_rect.move(-allan_speed, 0)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.x -= allan_speed
+                    if allan_rect.y < player_rect.y:
+                        new_rect = allan_rect.move(0, allan_speed)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.y += allan_speed
+                    elif allan_rect.y > player_rect.y:
+                        new_rect = allan_rect.move(0, -allan_speed)
+                        if not check_collisions(new_rect, collision_objects):
+                            allan_rect.y -= allan_speed
+                    if player_rect.colliderect(allan_rect):
+                        show_screamer = True
+                        screamer_start_time = pygame.time.get_ticks()
+                screen.fill((0, 0, 0))
+                drawmap(screen, tmx_data, camera_x, camera_y, scale_factor)
+                screen.blit(player_image, (player_rect.x - camera_x, player_rect.y - camera_y))
+                if allan_spawned:
+                    allan_image = allan_image_frames[allan_animation_index]
+                    screen.blit(allan_image, (allan_rect.x - camera_x, allan_rect.y - camera_y))
+                    allan_animation_index = (allan_animation_index + 1) % len(allan_image_frames)
+                timer_text = f'Time: {elapsed_time // 1000}'
+                font = pygame.font.Font(None, 36)
+                timer_surface = font.render(timer_text, True, (255, 255, 255))
+                screen.blit(timer_surface, (10, 10))
+                if show_screamer:
+                    screamer_surface = pygame.transform.scale(screamer_image, (1280, 720))
+                    screen.blit(screamer_surface, (0, 0))
+                    if pygame.time.get_ticks() - screamer_start_time >= 25:
+                        startgame(volume, brightness, user_login, character_id)
+                pygame.display.flip()
+                pygame.time.delay(20)
+    pygame.quit()
+
+def load_character_image(character_id):
+    character_images = {
+        0: load_image('z1.png'),
+        1: load_image('ch1.png'),
+        2: load_image('l1.png'),
+        3: load_image('o1.png'),
+    }
+    return character_images.get(character_id, load_image('z1.png'))
 
 
+def load_allan_images():
+    return [load_image(f'аллан{i}.png') for i in range(1, 6)]
+
+
+def load_allan_character():
+    return pygame.Rect(100, 100, 50, 50)
 
 play_music()
 main()
