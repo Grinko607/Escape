@@ -253,8 +253,6 @@ def draw_characters(window, user_login, volume, brightness):
     font = pygame.font.Font(None, 36)
     text = font.render('Выбрать', True, (0, 0, 0))
     window.blit(text, (save_button_rect.x + 35, save_button_rect.y + 35))
-
-    # Handle events
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -635,7 +633,7 @@ def game(volume, brightness, user_login):
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if (400 <= event.pos[0] <= 590) and (540 <= event.pos[1] <= 590):
+                if (300 <= event.pos[0] <= 690) and (440 <= event.pos[1] <= 690):
                     player_rect = None
                     allan_rect = None
                     screen, screen_width, screen_height = init_game()
@@ -941,7 +939,7 @@ def forest(volume, brightness, user_login):
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if (600 <= event.pos[0] <= 900) and (200 <= event.pos[1] <= 300):
+                if (500 <= event.pos[0] <= 1000) and (100 <= event.pos[1] <= 500):
                     player_rect = None
                     allan_rect = None
                     screen, screen_width, screen_height = init_game()
